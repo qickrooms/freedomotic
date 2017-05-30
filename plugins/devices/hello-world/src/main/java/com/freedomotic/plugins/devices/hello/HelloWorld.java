@@ -21,12 +21,18 @@ package com.freedomotic.plugins.devices.hello;
 
 import com.freedomotic.api.EventTemplate;
 import com.freedomotic.api.Protocol;
+import com.freedomotic.events.MessageEvent;
 import com.freedomotic.exceptions.UnableToExecuteException;
 import com.freedomotic.things.EnvObjectLogic;
 import com.freedomotic.things.ThingRepository;
 import com.freedomotic.reactions.Command;
 import com.google.inject.Inject;
+
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +53,7 @@ public class HelloWorld
      *
      */
     public HelloWorld() {
+    	
         //every plugin needs a name and a manifest XML file
         super("HelloWorld", "/hello-world/hello-world-manifest.xml");
         //read a property from the manifest file below which is in
@@ -57,6 +64,8 @@ public class HelloWorld
         setPollingWait(POLLING_WAIT); //millisecs interval between hardware device status reads
     }
 
+    
+    
     @Override
     protected void onShowGui() {
         /**
@@ -79,6 +88,13 @@ public class HelloWorld
         for (EnvObjectLogic thing : thingsRepository.findAll()) {
             LOG.info("HelloWorld sees Thing: {}", thing.getPojo().getName());
         }
+        
+        //get and format the current date and time
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        //create a freedomotic message event
+        MessageEvent message = new MessageEvent(null, "Hello world plugins says current time is " + dateFormat.format(date));
+        notifyEvent(message);
     }
 
     @Override

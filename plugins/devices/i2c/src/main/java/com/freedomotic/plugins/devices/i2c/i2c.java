@@ -4,7 +4,6 @@ import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.GpioFactory;
-
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CBus;
@@ -12,17 +11,18 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import com.freedomotic.api.EventTemplate;
 import com.freedomotic.api.Protocol;
-import com.freedomotic.app.Freedomotic;
+
 import com.freedomotic.events.ProtocolRead;
 import com.freedomotic.exceptions.UnableToExecuteException;
 import com.freedomotic.reactions.Command;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class i2c extends Protocol {
-
+	private static final Logger LOG = Logger.getLogger(i2c.class.getName());
     final int POLLING_WAIT;
     private I2CDevice dev;
     private I2CBus bus;
@@ -63,7 +63,7 @@ public class i2c extends Protocol {
 
     @Override
     protected void onRun() {
-        Freedomotic.logger.info("I2C onRun() logs this message every "
+        LOG.info("I2C onRun() logs this message every "
                 + "POLLINGWAIT=" + POLLING_WAIT + "milliseconds");
         //at the end of this method the system waits POLLINGTIME 
         //before calling it again. The result is this log message is printed
@@ -73,7 +73,7 @@ public class i2c extends Protocol {
 
     @Override
     protected void onStart() {
-        Freedomotic.logger.info("I2C plugin is started");
+    	LOG.info("I2C plugin is started");
 
 
         try {
@@ -131,7 +131,7 @@ public class i2c extends Protocol {
 
     @Override
     protected void onStop() {
-        Freedomotic.logger.info("I2C plugin is stopped ");
+    	LOG.info("I2C plugin is stopped ");
 
 
         try {
@@ -147,7 +147,7 @@ public class i2c extends Protocol {
 
     @Override
     protected void onCommand(Command c) throws IOException, UnableToExecuteException {
-        Freedomotic.logger.info("I2C plugin receives a command called " + c.getName()
+    	LOG.info("I2C plugin receives a command called " + c.getName()
                 + " with parameters " + c.getProperties().toString());
         String delimiter = configuration.getProperty("address-delimiter");
         address = c.getProperty("address").split(delimiter);
@@ -174,7 +174,7 @@ public class i2c extends Protocol {
 
     private void notifyChangeEvent(String device_address, int val) {
 
-        Freedomotic.logger.log(Level.INFO, "Sending I2C protocol read event for object address ''{0}''. It''s readed status is {1}", new Object[]{device_address, val});
+    	LOG.log(Level.INFO, "Sending I2C protocol read event for object address ''{0}''. It''s readed status is {1}", new Object[]{device_address, val});
         //building the event
         ProtocolRead event = new ProtocolRead(this, "i2c", device_address); //IP:PORT:RELAYLINE
 
